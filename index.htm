@@ -2,26 +2,38 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>スプレッドシート埋め込みページ</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 2em;
-    }
-    iframe {
-      border: 1px solid #ccc;
-      width: 90%;
-      height: 600px;
-    }
-  </style>
+  <title>リアルタイム スプレッドシート</title>
 </head>
 <body>
+  <h1>Google Sheets API データ取得</h1>
+  <div id="output">読み込み中...</div>
 
-  <h1>リアルタイム スプレッドシート</h1>
+  <script>
+    const sheetID = "1DS8bgQz1-_Uo31GiNwXtjJIPncOx-QH9aVKh9DhFzM4"; // ← あなたのIDに差し替え
+    const apiKey = "AIzaSyDFw3k227wtvVJ3j3jqKerbEjkUGI_oLtc"; // ← 取得したAPIキーをここに
+    const range = "男子ゆか!B2:M4"; // 読みたい範囲（例：シート1のA1〜E10）
 
-  <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSssq2xdc_koBjfxJrxrBx1s_9KHDxMEj0daMwQffRGwHahIKtfGAr2O_Me_Q3QqMaDu6dtJYHrg81J/pubhtml?widget=true&amp;headers=false"></iframe>
-  </iframe>
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetID}/values/${range}?key=${apiKey}`;
 
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const rows = data.values;
+        let html = "<table border='1'>";
+        rows.forEach(row => {
+          html += "<tr>";
+          row.forEach(cell => {
+            html += `<td>${cell}</td>`;
+          });
+          html += "</tr>";
+        });
+        html += "</table>";
+        document.getElementById("output").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("output").innerHTML = "データの取得に失敗しました";
+        console.error(err);
+      });
+  </script>
 </body>
 </html>
